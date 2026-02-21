@@ -1,55 +1,45 @@
 <?php
+require_once __DIR__ . '/../vendor/autoload.php';
 
-use Illuminate\Contracts\Http\Kernel;
-use Illuminate\Http\Request;
+use App\Config\Config;
 
-define('LARAVEL_START', microtime(true));
+// Load environment variables
+Config::load();
 
-/*
-|--------------------------------------------------------------------------
-| Check If The Application Is Under Maintenance
-|--------------------------------------------------------------------------
-|
-| If the application is in maintenance / demo mode via the "down" command
-| we will load this file so that any pre-rendered content can be shown
-| instead of starting the framework, which could cause an exception.
-|
-*/
-
-if (file_exists($maintenance = __DIR__.'/../storage/framework/maintenance.php')) {
-    require $maintenance;
+// Start session if not already started
+if (session_status() == PHP_SESSION_NONE) {
+    session_start();
 }
 
-/*
-|--------------------------------------------------------------------------
-| Register The Auto Loader
-|--------------------------------------------------------------------------
-|
-| Composer provides a convenient, automatically generated class loader for
-| this application. We just need to utilize it! We'll simply require it
-| into the script here so we don't need to manually load our classes.
-|
-*/
+// Simple routing
+$url = isset($_GET['url']) ? rtrim($_GET['url'], '/') : '';
+$urlParts = explode('/', $url);
 
-require __DIR__.'/../vendor/autoload.php';
+// Default controller and method
+$controllerName = !empty($urlParts[0]) ? ucfirst($urlParts[0]) . 'Controller' : 'HomeController';
+$methodName = !empty($urlParts[1]) ? $urlParts[1] : 'index';
+$params = array_slice($urlParts, 2);
 
-/*
-|--------------------------------------------------------------------------
-| Run The Application
-|--------------------------------------------------------------------------
-|
-| Once we have the application, we can handle the incoming request using
-| the application's HTTP kernel. Then, we will send the response back
-| to this client's browser, allowing them to enjoy our application.
-|
-*/
+// Special route for Google callback
+if ($controllerName === 'AuthController' && $methodName === 'google') {
+    $methodName = 'callback';
+}
 
-$app = require_once __DIR__.'/../bootstrap/app.php';
+// Controller namespace
+$controllerClass = "App\\Controllers\\{$controllerName}";
 
-$kernel = $app->make(Kernel::class);
-
-$response = $kernel->handle(
-    $request = Request::capture()
-)->send();
-
-$kernel->terminate($request, $response);
+if (class_exists($controllerClass)) {
+    $controller = new $controllerClass();
+    
+    if (method_exists($controller, $methodName)) {
+        call_user_func_array([$controller, $methodName], $params);
+    } else {
+        // Method not found
+        header("HTTP/1.0 404 Not Found");
+        include __DIR__ . '/../app/Views/errors/404.php';
+    }
+} else {
+    // Controller not found
+    header("HTTP/1.0 404 Not Found");
+    include __DIR__ . '/../app/Views/errors/404.php';
+}
