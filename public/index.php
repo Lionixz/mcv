@@ -59,6 +59,14 @@ $loginUrl = $client->createAuthUrl();
                 <a id="googleLoginBtn" href="<?= htmlspecialchars($loginUrl) ?>" class="btn-google">
                     Login with Google
                 </a>
+                <!-- Facebook login -->
+                <a id="fbLoginBtn" href="<?= htmlspecialchars($fbLoginUrl) ?>" class="btn-facebook">
+                    Login with Facebook
+                </a>
+
+                <form method="POST" action="handlers/fb_auth.php">
+                    <button type="submit" name="fb_login">Login with Facebook</button>
+                </form>
 
                 <div class="info-text">
                     Please login using your Google account to access your student portal.
