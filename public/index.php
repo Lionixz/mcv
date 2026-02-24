@@ -1,45 +1,72 @@
 <?php
-require_once __DIR__ . '/../vendor/autoload.php';
+require __DIR__ . '/../config/config.php';
+require __DIR__ . '/../config/db.php';
+require_once __DIR__ . '/../handlers/google_auth.php';
 
-use App\Config\Config;
+// Google login URL
+$loginUrl = $client->createAuthUrl();
+?>
+<!DOCTYPE html>
+<html lang="en">
 
-// Load environment variables
-Config::load();
+<head>
+    <meta charset="UTF-8">
+    <title>Register Student Account</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
+    <link rel="icon" href="../public/images/system/favicon.ico" type="image/x-icon">
+    <link rel="stylesheet" href="css/login.css">
+   
+</head>
 
-// Start session if not already started
-if (session_status() == PHP_SESSION_NONE) {
-    session_start();
-}
+<body>
+    <div class="login-container">
+        <div class="left-side">
+            <img src="../public/images/system/ccsfp-building.jpg" alt="building" class="bg-img">
 
-// Simple routing
-$url = isset($_GET['url']) ? rtrim($_GET['url'], '/') : '';
-$urlParts = explode('/', $url);
+            <!-- Logo and School Name Container -->
+            <div class="logo-container">
+                <img src="../public/images/system/logo.png" alt="Logo" class="logo-img">
+                <h1 class="school-name">City College of San Fernando – San Fernando Pampanga</h1>
+            </div>
 
-// Default controller and method
-$controllerName = !empty($urlParts[0]) ? ucfirst($urlParts[0]) . 'Controller' : 'HomeController';
-$methodName = !empty($urlParts[1]) ? $urlParts[1] : 'index';
-$params = array_slice($urlParts, 2);
+            <div class="overlay-text">
+                <h1>VISION</h1>
+                <p>By 2040, the City College of San Fernando Pampanga is a leading institution of higher education advancing the quality of life of Fernandinos.</p>
+                <h1>MISSION</h1>
+                <p>To provide innovative and industry-responsive education, sustained by community engagement with robust institutional structure.</p>
+            </div>
+        </div>
 
-// Special route for Google callback
-if ($controllerName === 'AuthController' && $methodName === 'google') {
-    $methodName = 'callback';
-}
+        <!-- RIGHT SIDE -->
+        <div class="right-side">
+            <div class="login-form">
+                <h2>Register Student Account</h2>
 
-// Controller namespace
-$controllerClass = "App\\Controllers\\{$controllerName}";
+                <!-- FAKE FORM -->
+                <form id="registerForm">
+                    <label>Email</label>
+                    <input type="email" name="email" placeholder="Enter your email" required>
+                    <label>Password</label>
+                    <input type="password" id="password" name="password" placeholder="Enter your password" required>
+                    <label>Confirm Password</label>
+                    <input type="password" id="confirm_password" name="confirm_password" placeholder="Confirm your password" required>
+                    <button type="submit" class="btn-login">Register</button>
+                </form>
 
-if (class_exists($controllerClass)) {
-    $controller = new $controllerClass();
-    
-    if (method_exists($controller, $methodName)) {
-        call_user_func_array([$controller, $methodName], $params);
-    } else {
-        // Method not found
-        header("HTTP/1.0 404 Not Found");
-        include __DIR__ . '/../app/Views/errors/404.php';
-    }
-} else {
-    // Controller not found
-    header("HTTP/1.0 404 Not Found");
-    include __DIR__ . '/../app/Views/errors/404.php';
-}
+                <div class="divider">OR</div>
+
+                <!-- Google login -->
+                <a id="googleLoginBtn" href="<?= htmlspecialchars($loginUrl) ?>" class="btn-google">
+                    Login with Google
+                </a>
+
+                <div class="info-text">
+                    Please login using your Google account to access your student portal.
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="js/login.index.js"></script>
+</body>
+
+</html>

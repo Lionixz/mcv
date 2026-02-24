@@ -1,25 +1,24 @@
 <?php
-require_once __DIR__ . '/../vendor/autoload.php';
+    require_once '../middleware/cache.php';
+    require_once '../middleware/checkSession.php';
+    require_once '../config/db.php';
+?>
 
-use App\Config\Config;
-use App\Middleware\RoleMiddleware;
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <?php includeAndCache('../includes/head.php'); ?>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
+    <link rel="stylesheet" href="../public/css/user_index.css">
+</head>
 
-// Load environment
-Config::load();
-
-// Start session
-if (session_status() == PHP_SESSION_NONE) {
-    session_start();
-}
-
-// Check if user is authenticated and has user role
-try {
-    RoleMiddleware::requireUser();
-} catch (Exception $e) {
-    // Redirect to login if not authorized
-    header('Location: ' . Config::getAppUrl() . '/');
-    exit;
-}
-
-// Include the actual user dashboard
-require_once 'dashboard.php';
+<body>
+    <?php includeAndCache('../includes/sidebar.php'); ?>
+    <main>
+        <div class="container">
+          d
+        </div>
+    </main>
+</body>
+<?php includeAndCache('../includes/footer.php'); ?>
+</html>

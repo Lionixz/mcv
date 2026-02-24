@@ -1,25 +1,27 @@
 <?php
-require_once __DIR__ . '/../vendor/autoload.php';
+include_once('../middleware/checkSession.php');
+include_once('../middleware/cache.php');   
+include(__DIR__ . "/../config/db.php");
+?>  
 
-use App\Config\Config;
-use App\Middleware\RoleMiddleware;
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin - Applicants List</title>
+    <?php includeAndCache('../includes/admin_head.php'); ?>
+    <link rel="stylesheet" href="../public/css/admin_index.css">
+</head>
+<body>
+    <?php includeAndCache('../includes/admin_sidebar.php'); ?>
 
-// Load environment
-Config::load();
+    <main>
+        <div class="container">
+          
+        </div>
+    </main>
 
-// Start session
-if (session_status() == PHP_SESSION_NONE) {
-    session_start();
-}
-
-// Check if user is admin
-try {
-    RoleMiddleware::requireAdmin();
-} catch (Exception $e) {
-    // Redirect to login if not admin
-    header('Location: ' . Config::getAppUrl() . '/');
-    exit;
-}
-
-// Include the actual admin dashboard
-require_once 'dashboard.php';
+    <script src="../public/js/admin_index.js"></script>
+</body>
+</html>

@@ -1,15 +1,8 @@
 {
-    "name": "mvc/mvc-app",
-    "description": "MVC PHP Application with Google Login",
-    "type": "project",
     "require": {
         "php": ">=7.4",
-        "google/apiclient": "^2.18",
-        "vlucas/phpdotenv": "^5.6"
-    },
-    "autoload": {
-        "psr-4": {
-            "App\\": "app/"
-        }
+        "google/apiclient": "^2.0",
+        "vlucas/phpdotenv": "^5.6",
+        "facebook/graph-sdk": "^5.1"
     }
 }
